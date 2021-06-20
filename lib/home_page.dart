@@ -13,6 +13,19 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: Text('ChessTable')),
         body: _buildBody(),
+        drawer: Drawer(
+          child: Column(
+            children: [
+              DrawerHeader(
+                  child: Center(child: Text('Should be a pawn image'))),
+              TextButton(
+                  child: ListTile(title: Text('Load Games')),
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/donwload');
+                  }),
+            ],
+          ),
+        ),
       );
 
   Center _buildBody() => Center(
