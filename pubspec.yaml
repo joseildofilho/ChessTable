@@ -15,6 +15,9 @@ dependencies:
   flutter_stateless_chessboard: 
     path: ../flutter_chessboard
   chess: ^0.7.0
+  rxdart: ^0.27.1
+  equatable: ^2.0.3
+  provider: ^5.0.0
 
 dev_dependencies:
   flutter_test:
