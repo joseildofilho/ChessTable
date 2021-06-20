@@ -1,68 +1,20 @@
-import 'package:chesstable/services/lichess.dart';
 import 'package:flutter/material.dart';
-import 'dart:async';
-import 'package:rxdart/rxdart.dart';
 
-import 'core/progress.dart';
-import 'download_games_forms_widget.dart';
+import 'download_games_page.dart';
+import 'home_page.dart';
 
 void main() {
   runApp(ChessTable());
 }
 
-class ChessTable extends StatefulWidget {
-  @override
-  _ChessTableState createState() => _ChessTableState();
-}
-
-class _ChessTableState extends State<ChessTable> {
+class ChessTable extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
-        title: 'ChessTable',
-        theme: ThemeData.dark(),
-        home: DownloadGamesPage(),
-      );
-}
-
-class DownloadGamesPage extends StatelessWidget {
-  final DownloadGamesController downloadGamesPage = DownloadGamesController();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-        appBar: AppBar(
-          title: Text('ChessTable'),
-        ),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Center(
-              child: DownloadGamesForm(downloadGamesPage),
-            )
-          ],
-        ),
-      );
-}
-
-class DownloadGamesController {
-  late StreamController<Progress<String>> _gamesDownloadProgress =
-      StreamController()..sink.add(Initial());
-
-  Stream<Progress<String>> get games => this._gamesDownloadProgress.stream;
-
-  final Set<String> _games = {};
-
-  int get numberOfGames => _games.length;
-
-  void startDownload(String playersName) async {
-    final Stream<String> data = await getAllGamesFrom(playersName);
-    _gamesDownloadProgress.sink.addStream(data
-        .doOnData(_games.add)
-        .doOnData(print)
-        .map<Progress<String>>((s) => ProcessingPartialResult(data: s))
-        .endWith(Done(data: '')));
-  }
-
-  dispose() {
-    _gamesDownloadProgress.close();
-  }
+          title: 'ChessTable',
+          theme: ThemeData.dark(),
+          initialRoute: '/',
+          routes: {
+            '/': (ctx) => HomePage(),
+            '/donwload': (ctx) => DownloadGamesPage()
+          });
 }
