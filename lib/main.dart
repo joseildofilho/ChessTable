@@ -1,6 +1,11 @@
+import 'package:chesstable/services/lichess.dart';
+import 'package:dio/dio.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'package:rxdart/rxdart.dart';
+
+import 'download_games_forms_widget.dart';
 
 void main() {
   runApp(ChessTable());
@@ -32,23 +37,7 @@ class DownloadGamesPage extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Center(
-            child: StreamBuilder(
-              stream: downloadGamesPage.games,
-              builder: (BuildContext context,
-                  AsyncSnapshot<Progress<String>> snapshot) {
-                if (snapshot.hasData) {
-                  final data = snapshot.data;
-                  if (data is Initial)
-                    return DownloadGamesForm();
-                  else if (data is Processing)
-                    return Center(child: CircularProgressIndicator());
-                  else
-                    return Container(
-                        height: 300, width: 300, color: Colors.red);
-                }
-                return Container();
-              },
-            ),
+            child: DownloadGamesForm(downloadGamesPage.games),
           )
         ],
       ),
@@ -57,41 +46,19 @@ class DownloadGamesPage extends StatelessWidget {
       }));
 }
 
-class DownloadGamesForm extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) => Form(
-        child: Container(
-          width: 200,
-          child: Column(
-            children: [
-              TextFormField(
-                decoration: InputDecoration(
-                  labelText: "Player's Name",
-                  enabledBorder: OutlineInputBorder(),
-                  focusedBorder: OutlineInputBorder(),
-                ),
-              ),
-              SizedBox(height: 10),
-              ElevatedButton(
-                child: Text("Get Games"),
-                onPressed: () {},
-              ),
-            ],
-          ),
-        ),
-      );
-}
-
 class DownloadGamesController {
   late StreamController<Progress<String>> _gamesDownloadProgress =
       StreamController()..sink.add(Initial());
 
   Stream<Progress<String>> get games => this._gamesDownloadProgress.stream;
 
+  final Set<String> _games = {};
+
   void startDownload() async {
-    this._gamesDownloadProgress.sink.add(Processing());
-    await Future.delayed(Duration(seconds: 10));
-    this._gamesDownloadProgress.sink.add(Done(data: ''));
+    final Stream<String> data = await getAllGamesFrom('joseildo');
+    _gamesDownloadProgress.sink.addStream(data
+        .map<Progress<String>>((s) => ProcessingPartialResult(data: s))
+        .endWith(Done(data: '')));
   }
 
   dispose() {
@@ -107,6 +74,15 @@ class Initial<T> extends Progress<T> {
 }
 
 class Processing<T> extends Progress<T> {
+  @override
+  List<Object?> get props => [];
+}
+
+class ProcessingPartialResult<T> extends Progress<T> {
+  final T data;
+
+  ProcessingPartialResult({required this.data});
+
   @override
   List<Object?> get props => [];
 }
