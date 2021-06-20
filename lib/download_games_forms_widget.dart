@@ -1,47 +1,56 @@
-import 'package:chesstable/main.dart';
 import 'package:flutter/material.dart';
+
+import 'core/progress.dart';
+import 'main.dart';
 
 class DownloadGamesForm extends StatefulWidget {
   DownloadGamesForm(this.gamesStream);
 
-  final Stream<Progress<String>> gamesStream;
+  final DownloadGamesController gamesStream;
+  final TextEditingController playersName = TextEditingController();
 
   @override
   _DownloadGamesFormState createState() => _DownloadGamesFormState();
 }
 
 class _DownloadGamesFormState extends State<DownloadGamesForm> {
-  final Set<String> games = {};
-
   @override
   Widget build(BuildContext context) => StreamBuilder<Progress<String>>(
-      stream: widget.gamesStream,
-      builder: (context, snapshot) {
-        final data = snapshot.data;
-        if (data is ProcessingPartialResult<String>) games.add(data.data);
-        return Form(
+        stream: widget.gamesStream.games,
+        builder: (context, snapshot) => Form(
           child: Container(
             width: 200,
             child: Column(
               children: [
                 TextFormField(
+                  controller: widget.playersName,
                   decoration: InputDecoration(
                     labelText: "Player's Name",
                     enabledBorder: OutlineInputBorder(),
                     focusedBorder: OutlineInputBorder(),
                   ),
+                  validator: (v) {
+                      if(v != null && v.isNotEmpty) {
+                          return '';
+                      }
+                        return 'type the player name';
+                  }
                 ),
                 SizedBox(height: 10),
                 ElevatedButton(
                   child: Text("Get Games"),
-                  onPressed: () async {},
+                  onPressed: () {
+                    final playerName = widget.playersName.text;
+                    if (playerName.isNotEmpty)
+                      widget.gamesStream.startDownload(playerName);
+                  },
                 ),
-                Text('${games.length}'),
-                if (!(data is Done || data is Initial))
+                Text('${widget.gamesStream.numberOfGames}'),
+                if (!(snapshot.data is Done || snapshot.data is Initial))
                   CircularProgressIndicator(),
               ],
             ),
           ),
-        );
-      });
+        ),
+      );
 }
