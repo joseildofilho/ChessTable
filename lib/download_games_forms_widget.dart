@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'core/progress.dart';
-import 'main.dart';
+import 'download_games_page.dart';
 
 class DownloadGamesForm extends StatefulWidget {
   DownloadGamesForm(this.gamesStream);
@@ -23,19 +23,18 @@ class _DownloadGamesFormState extends State<DownloadGamesForm> {
             child: Column(
               children: [
                 TextFormField(
-                  controller: widget.playersName,
-                  decoration: InputDecoration(
-                    labelText: "Player's Name",
-                    enabledBorder: OutlineInputBorder(),
-                    focusedBorder: OutlineInputBorder(),
-                  ),
-                  validator: (v) {
-                      if(v != null && v.isNotEmpty) {
-                          return '';
+                    controller: widget.playersName,
+                    decoration: InputDecoration(
+                      labelText: "Player's Name",
+                      enabledBorder: OutlineInputBorder(),
+                      focusedBorder: OutlineInputBorder(),
+                    ),
+                    validator: (v) {
+                      if (v != null && v.isNotEmpty) {
+                        return '';
                       }
-                        return 'type the player name';
-                  }
-                ),
+                      return 'type the player name';
+                    }),
                 SizedBox(height: 10),
                 ElevatedButton(
                   child: Text("Get Games"),
