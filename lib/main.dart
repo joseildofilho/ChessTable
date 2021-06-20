@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 
 import 'download_games_page.dart';
 import 'home_page.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-void main() {
+void main() async {
+  Hive.init('./');
+  await Hive.openBox('games');
   runApp(ChessTable());
 }
 
