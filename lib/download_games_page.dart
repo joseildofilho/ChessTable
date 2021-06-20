@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:chesstable/repositories/games_repository_hive.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:chesstable/services/lichess.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 
 import 'core/progress.dart';
 import 'download_games_forms_widget.dart';
+import 'repositories/games_repository.dart';
 
 class DownloadGamesPage extends StatelessWidget {
   final DownloadGamesController downloadGamesPage = DownloadGamesController();
@@ -33,6 +35,7 @@ class DownloadGamesController {
   Stream<Progress<String>> get games => this._gamesDownloadProgress.stream;
 
   final Set<String> _games = {};
+  final GamesRepository _gamesRepository = GamesRepositoryImpl();
 
   int get numberOfGames => _games.length;
 
@@ -41,6 +44,7 @@ class DownloadGamesController {
     _gamesDownloadProgress.sink.addStream(data
         .doOnData(_games.add)
         .doOnData(print)
+        .doOnData(_gamesRepository.saveLocally)
         .map<Progress<String>>((s) => ProcessingPartialResult(data: s))
         .endWith(Done(data: '')));
   }
