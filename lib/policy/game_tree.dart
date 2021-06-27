@@ -5,18 +5,41 @@ class GameTree {
   Map<String, GameStateWithDescendency> tree = {};
 
   create(List<Chess> chessGames) {
-      final move = chessGames.first.history.first.move.toAlgebraic;
-      tree[move] = GameStateWithDescendency(move, 1); 
+    chessGames.forEach(
+        (game) => updateTree(game.san_moves().map((x) => x!).toList()));
   }
+
+  updateTree(List<String> history) => history.fold<List<String>>(
+        <String>[],
+        (list, move) => move
+            .split(' ')
+            .skip(1)
+            .fold<List<String>>(list, (l, halfMove) => l + [halfMove]),
+      ).fold<Map<String, GameStateWithDescendency>>(
+        tree,
+        (subTree, halfMove) => subTree
+            .update(
+              halfMove,
+              (state) => state.add1(),
+              ifAbsent: () => GameStateWithDescendency(halfMove),
+            )
+            .descendency,
+      );
 }
 
 class GameStateWithDescendency extends GameState {
   final int rechead;
   final Map<String, GameStateWithDescendency> descendency;
 
-  GameStateWithDescendency(String position, this.rechead,
-      [this.descendency = const {}])
-      : super(position);
+  GameStateWithDescendency(String position, [this.rechead = 1, descendency])
+      : this.descendency = descendency ?? {},
+        super(position);
+
+  GameStateWithDescendency add1() => GameStateWithDescendency(
+      this.position, this.rechead + 1, this.descendency);
+
+  @override
+  List<Object?> get props => [position, rechead, descendency];
 }
 
 class GameState extends Equatable {
