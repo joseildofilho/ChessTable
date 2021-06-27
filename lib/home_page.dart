@@ -2,6 +2,7 @@ import 'package:chess/chess.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 
+import 'pages/widgets/game_tree_explorer.dart';
 import 'repositories/games_repository_hive.dart';
 
 class HomePage extends StatefulWidget {
@@ -50,15 +51,20 @@ class _HomePageState extends State<HomePage> {
                 setState(() {});
               }),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ElevatedButton(child: Text('undo'), onPressed: () {
-                moves.add(chess.undo_move());
-                setState(() {});
-            }),
-            ElevatedButton(child: Text('do'), onPressed: () {
-                chess.move(moves.removeLast());
-                setState(() {});
-            }),
+            ElevatedButton(
+                child: Text('undo'),
+                onPressed: () {
+                  moves.add(chess.undo_move());
+                  setState(() {});
+                }),
+            ElevatedButton(
+                child: Text('do'),
+                onPressed: () {
+                  chess.move(moves.removeLast());
+                  setState(() {});
+                }),
           ]),
+          GameTreeExplorer(),
         ]),
       );
 }
