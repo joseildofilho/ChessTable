@@ -41,14 +41,15 @@ class HalfMoveWithDescendency extends HalfMoveStat {
 
 @CopyWith()
 class HalfMoveStat extends HalfMove {
-  final int whiteWins, draw, blackWins;
+  final int whiteWins, draw, blackWins, total;
 
   HalfMoveStat({
     required String position,
     this.whiteWins = 0,
     this.draw = 0,
     this.blackWins = 0,
-  }) : super(position);
+  })  : total = whiteWins + draw + blackWins,
+        super(position);
 
   @override
   List<Object?> get props => [whiteWins, draw, blackWins, ...super.props];

@@ -20,14 +20,16 @@ class GameTree {
           .fold<List<String>>(list, (l, halfMove) => l + [halfMove]),
     ).fold<Map<String, HalfMoveWithDescendency>>(
       tree,
-      (subTree, String halfMove) => subTree.update(
-        halfMove,
-        (state) {
-          return AddMove.updateWithGameResult(result, state);
-        },
-        ifAbsent: () => HalfMoveWithDescendency.withStat(
-            stat: HalfMoveStat(position: halfMove)),
-      ).descendency,
+      (subTree, String halfMove) => subTree
+          .update(
+            halfMove,
+            (state) => AddMove.updateWithGameResult(result, state),
+            ifAbsent: () => AddMove.updateWithGameResult(
+                result,
+                HalfMoveWithDescendency.withStat(
+                    stat: HalfMoveStat(position: halfMove))),
+          )
+          .descendency,
     );
   }
 }
