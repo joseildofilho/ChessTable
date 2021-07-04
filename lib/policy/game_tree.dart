@@ -1,53 +1,72 @@
 import 'package:chess/chess.dart';
-import 'package:equatable/equatable.dart';
+import 'package:chesstable/domain/entities/half_move.dart';
 
 class GameTree {
-  Map<String, GameStateWithDescendency> tree = {};
+  Map<String, HalfMoveWithDescendency> tree = {};
 
   GameTree create(List<Chess> chessGames) {
-    chessGames.forEach(
-        (game) => updateTree(game.san_moves().map((x) => x!).toList()));
+    chessGames.forEach((Chess game) => updateTree(
+        game.san_moves().map((x) => x!).toList(),
+        _winner(game.header['Result'])));
     return this;
   }
 
-  updateTree(List<String> history) => history.fold<List<String>>(
-        <String>[],
-        (list, move) => move
-            .split(' ')
-            .skip(1)
-            .fold<List<String>>(list, (l, halfMove) => l + [halfMove]),
-      ).fold<Map<String, GameStateWithDescendency>>(
-        tree,
-        (subTree, halfMove) => subTree
-            .update(
-              halfMove,
-              (state) => state.add1(),
-              ifAbsent: () => GameStateWithDescendency(halfMove),
-            )
-            .descendency,
-      );
+  updateTree(List<String> history, GameResult result) {
+    return history.fold<List<String>>(
+      <String>[],
+      (list, move) => move
+          .split(' ')
+          .skip(1)
+          .fold<List<String>>(list, (l, halfMove) => l + [halfMove]),
+    ).fold<Map<String, HalfMoveWithDescendency>>(
+      tree,
+      (subTree, String halfMove) => subTree.update(
+        halfMove,
+        (state) {
+          return AddMove.updateWithGameResult(result, state);
+        },
+        ifAbsent: () => HalfMoveWithDescendency.withStat(
+            stat: HalfMoveStat(position: halfMove)),
+      ).descendency,
+    );
+  }
 }
 
-class GameStateWithDescendency extends GameState {
-  final int rechead;
-  final Map<String, GameStateWithDescendency> descendency;
+class AddMove {
+  static HalfMoveWithDescendency updateWithGameResult(
+      GameResult gameResult, HalfMoveWithDescendency halfMove) {
+    switch (gameResult) {
+      case GameResult.BLACK_WIN:
+        return addBlackWin(halfMove);
+      case GameResult.WHITE_WIN:
+        return addWhiteWin(halfMove);
+      case GameResult.DRAW:
+        return addDraw(halfMove);
+      case GameResult.ONGOING:
+        throw 'ongoing game';
+    }
+  }
 
-  GameStateWithDescendency(String position, [this.rechead = 1, descendency])
-      : this.descendency = descendency ?? {},
-        super(position);
+  static HalfMoveWithDescendency addBlackWin(
+          HalfMoveWithDescendency halfMove) =>
+      halfMove.copyWith(blackWins: halfMove.blackWins + 1);
 
-  GameStateWithDescendency add1() => GameStateWithDescendency(
-      this.position, this.rechead + 1, this.descendency);
+  static HalfMoveWithDescendency addWhiteWin(
+          HalfMoveWithDescendency halfMove) =>
+      halfMove.copyWith(whiteWins: halfMove.whiteWins + 1);
 
-  @override
-  List<Object?> get props => [position, rechead, descendency];
+  static HalfMoveWithDescendency addDraw(HalfMoveWithDescendency halfMove) =>
+      halfMove.copyWith(draw: halfMove.draw + 1);
 }
 
-class GameState extends Equatable {
-  final String position;
-
-  GameState(this.position);
-
-  @override
-  List<Object?> get props => [position];
+GameResult _winner(String result) {
+  if (result == '*') return GameResult.ONGOING;
+  if (result == '1-0')
+    return GameResult.WHITE_WIN;
+  else if (result == '0-1')
+    return GameResult.BLACK_WIN;
+  else
+    return GameResult.DRAW;
 }
+
+enum GameResult { BLACK_WIN, WHITE_WIN, DRAW, ONGOING }

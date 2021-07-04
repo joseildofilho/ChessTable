@@ -13,10 +13,17 @@ class GameTreeExplorer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: _gameTree.tree.keys
           .map((key) => Container(color: Colors.red, child: Text(key)))
           .toList(),
     );
+  }
+}
+
+class HalfMoveStats extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

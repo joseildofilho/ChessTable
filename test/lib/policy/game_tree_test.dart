@@ -16,7 +16,7 @@ main() {
 
       gameTree.create([chess]);
 
-      expect(gameTree.tree, equals({'e4': GameStateWithDescendency('e4', 1)}));
+      expect(gameTree.tree, equals({'e4': HalfMoveWithDescendency('e4', 1)}));
     });
 
     test('should create a basic position with two move', () {
@@ -29,8 +29,8 @@ main() {
       expect(
           gameTree.tree,
           equals({
-            'e4': GameStateWithDescendency('e4', 1, {
-              'e5': GameStateWithDescendency('e5', 1),
+            'e4': HalfMoveWithDescendency('e4', 1, {
+              'e5': HalfMoveWithDescendency('e5', 1),
             })
           }));
     });
@@ -44,7 +44,7 @@ main() {
 
       gameTree.create([chess, chess2]);
 
-      expect(gameTree.tree, equals({'e4': GameStateWithDescendency('e4', 2)}));
+      expect(gameTree.tree, equals({'e4': HalfMoveWithDescendency('e4', 2)}));
     });
 
     test('should create a basic position with three moves and two games', () {
@@ -63,10 +63,10 @@ main() {
       expect(
           gameTree.tree,
           equals({
-            'e4': GameStateWithDescendency('e4', 2, {
-              'e5': GameStateWithDescendency('e5', 2, {
-                'd4': GameStateWithDescendency('d4'),
-                'Nf3': GameStateWithDescendency('Nf3')
+            'e4': HalfMoveWithDescendency('e4', 2, {
+              'e5': HalfMoveWithDescendency('e5', 2, {
+                'd4': HalfMoveWithDescendency('d4'),
+                'Nf3': HalfMoveWithDescendency('Nf3')
               }),
             })
           }));
