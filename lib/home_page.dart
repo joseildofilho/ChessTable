@@ -12,6 +12,21 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var chess = Chess();
+
+  final List<Chess> chessGames = [];
+
+  @override
+  void initState() {
+    GamesRepositoryImpl()
+        .getAll()
+        .then((eitherGames) => eitherGames.forEach((game) {
+              final chessGame = Chess();
+              chessGame.load_pgn(game);
+              chessGames.add(chessGame);
+            }));
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
         appBar: AppBar(title: Text('ChessTable')),
@@ -27,7 +42,6 @@ class _HomePageState extends State<HomePage> {
                     await Navigator.pushNamed(context, '/donwload');
                     final games = await GamesRepositoryImpl().getGames();
                     final loadedGame = games.toOption().toNullable()!;
-                    print(loadedGame);
                     chess = Chess()..load_pgn(loadedGame);
                     setState(() {});
                   }),
@@ -39,32 +53,34 @@ class _HomePageState extends State<HomePage> {
   final moves = [];
 
   Center _buildBody() => Center(
-        child: Column(children: [
-          Chessboard(
-              boardSize: 600,
-              fen: chess.generate_fen(),
-              onMove: (move) {
-                chess.move({
-                  'from': move.from,
-                  'to': move.to,
-                });
-                setState(() {});
-              }),
-          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-            ElevatedButton(
-                child: Text('undo'),
-                onPressed: () {
-                  moves.add(chess.undo_move());
+        child: Row(children: [
+          Column(children: [
+            Chessboard(
+                boardSize: 600,
+                fen: chess.generate_fen(),
+                onMove: (move) {
+                  chess.move({
+                    'from': move.from,
+                    'to': move.to,
+                  });
                   setState(() {});
                 }),
-            ElevatedButton(
-                child: Text('do'),
-                onPressed: () {
-                  chess.move(moves.removeLast());
-                  setState(() {});
-                }),
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+              ElevatedButton(
+                  child: Text('undo'),
+                  onPressed: () {
+                    moves.add(chess.undo_move());
+                    setState(() {});
+                  }),
+              ElevatedButton(
+                  child: Text('do'),
+                  onPressed: () {
+                    chess.move(moves.removeLast());
+                    setState(() {});
+                  }),
+            ]),
           ]),
-          GameTreeExplorer(),
+          GameTreeExplorer(chessGames: this.chessGames),
         ]),
       );
 }

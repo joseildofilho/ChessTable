@@ -4,9 +4,10 @@ import 'package:equatable/equatable.dart';
 class GameTree {
   Map<String, GameStateWithDescendency> tree = {};
 
-  create(List<Chess> chessGames) {
+  GameTree create(List<Chess> chessGames) {
     chessGames.forEach(
         (game) => updateTree(game.san_moves().map((x) => x!).toList()));
+    return this;
   }
 
   updateTree(List<String> history) => history.fold<List<String>>(

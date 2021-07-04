@@ -22,4 +22,8 @@ class GamesRepositoryImpl extends GamesRepository {
   Future<Either<Failure, String>> getGames() {
     return Future.value(Right(box.get(lastGame)));
   }
+
+  Future<List<String>> getAll() async {
+    return box.values.cast<String>().toList();
+  }
 }
