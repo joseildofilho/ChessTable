@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'core/progress.dart';
+import '../../core/progress.dart';
 import 'download_games_page.dart';
 
 class DownloadGamesForm extends StatefulWidget {

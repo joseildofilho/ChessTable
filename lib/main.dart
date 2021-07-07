@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import 'download_games_page.dart';
-import 'home_page.dart';
+import 'presentation/pages/download_games_page.dart';
+import 'presentation/pages/home_page.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 

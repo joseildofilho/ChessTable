@@ -1,11 +1,11 @@
 import 'package:chess/chess.dart' hide State;
+import 'package:chesstable/data/repositories/games_repository_hive.dart';
+import 'package:chesstable/domain/use_cases/policy/game_tree.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 
-import 'domain/entities/half_move.dart';
-import 'pages/widgets/game_tree_explorer.dart';
-import 'policy/game_tree.dart';
-import 'repositories/games_repository_hive.dart';
+import '../../domain/entities/half_move.dart';
+import 'widgets/game_tree_explorer.dart';
 
 class HomePage extends StatefulWidget {
   @override

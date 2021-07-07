@@ -1,12 +1,11 @@
 import 'package:chess/chess.dart';
+import 'package:chesstable/domain/repository/games_repository.dart';
 import 'package:dartz/dartz.dart';
 
 import 'package:chesstable/core/sucess.dart';
 
 import 'package:chesstable/core/failure.dart';
 import 'package:hive/hive.dart';
-
-import 'games_repository.dart';
 
 class GamesRepositoryImpl extends GamesRepository {
   static final box = Hive.box('games');

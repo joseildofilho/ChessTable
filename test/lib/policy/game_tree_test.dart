@@ -1,5 +1,6 @@
 import 'package:chess/chess.dart';
-import 'package:chesstable/policy/game_tree.dart';
+import 'package:chesstable/domain/entities/half_move.dart';
+import 'package:chesstable/domain/use_cases/policy/game_tree.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 main() {

@@ -1,13 +1,13 @@
 import 'dart:async';
-import 'package:chesstable/repositories/games_repository_hive.dart';
+import 'package:chesstable/data/repositories/games_repository_hive.dart';
+import 'package:chesstable/data/services/lichess.dart';
+import 'package:chesstable/domain/repository/games_repository.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:chesstable/services/lichess.dart';
 import 'package:flutter/material.dart';
 
-import 'core/progress.dart';
+import '../../core/progress.dart';
 import 'download_games_forms_widget.dart';
-import 'repositories/games_repository.dart';
 
 class DownloadGamesPage extends StatelessWidget {
   final DownloadGamesController downloadGamesPage = DownloadGamesController();
