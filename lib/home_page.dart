@@ -2,7 +2,9 @@ import 'package:chess/chess.dart' hide State;
 import 'package:flutter/material.dart';
 import 'package:flutter_stateless_chessboard/flutter_stateless_chessboard.dart';
 
+import 'domain/entities/half_move.dart';
 import 'pages/widgets/game_tree_explorer.dart';
+import 'policy/game_tree.dart';
 import 'repositories/games_repository_hive.dart';
 
 class HomePage extends StatefulWidget {
@@ -12,6 +14,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   var chess = Chess();
+  late final GameTree gameTree;
 
   final List<Chess> chessGames = [];
 
@@ -24,6 +27,7 @@ class _HomePageState extends State<HomePage> {
               chessGame.load_pgn(game);
               chessGames.add(chessGame);
             }));
+
     super.initState();
   }
 
@@ -42,7 +46,8 @@ class _HomePageState extends State<HomePage> {
                     await Navigator.pushNamed(context, '/donwload');
                     final games = await GamesRepositoryImpl().getGames();
                     final loadedGame = games.toOption().toNullable()!;
-                    chess = Chess()..load_pgn(loadedGame);
+                    //chess = Chess()..load_pgn(loadedGame);
+                    gameTree = GameTree().create(this.chessGames);
                     setState(() {});
                   }),
             ],
@@ -80,7 +85,17 @@ class _HomePageState extends State<HomePage> {
                   }),
             ]),
           ]),
-          GameTreeExplorer(chessGames: this.chessGames),
+          GameTreeExplorer(
+              gameTree: this.gameTree,
+              onClick: (HalfMove half) {
+                chess.move(half.position);
+                moves.add(half.position);
+                print(half.position);
+                print(chess.generate_fen());
+                Future.delayed(Duration(milliseconds: 500), () {
+                  setState(() {});
+                });
+              }),
         ]),
       );
 }

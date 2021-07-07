@@ -3,6 +3,7 @@ import 'package:chesstable/domain/entities/half_move.dart';
 
 class GameTree {
   Map<String, HalfMoveWithDescendency> tree = {};
+  final List<HalfMoveWithDescendency> movesStack = [];
 
   GameTree create(List<Chess> chessGames) {
     chessGames.forEach((Chess game) => updateTree(
@@ -31,6 +32,18 @@ class GameTree {
           )
           .descendency,
     );
+  }
+
+  GameTree goDown(String move) {
+    final halfMove = this.tree[move];
+    tree = halfMove!.descendency;
+    movesStack.add(halfMove);
+    return this;
+  }
+
+  GameTree goUp() {
+    tree = movesStack.removeLast().descendency;
+    return this;
   }
 }
 

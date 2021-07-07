@@ -1,25 +1,36 @@
-import 'package:chess/chess.dart' hide Color;
 import 'package:chesstable/domain/entities/half_move.dart';
 import 'package:chesstable/policy/game_tree.dart';
 import 'package:flutter/material.dart';
 
-class GameTreeExplorer extends StatelessWidget {
-  final List<Chess> _chessGames;
-  final GameTree _gameTree;
+class GameTreeExplorer extends StatefulWidget {
+  final GameTree gameTree;
+  final Function(HalfMove stat) onClick;
 
-  GameTreeExplorer({required chessGames})
-      : this._chessGames = chessGames,
-        this._gameTree = GameTree().create(chessGames);
+  GameTreeExplorer({required this.gameTree, required this.onClick});
 
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: _gameTree.tree.values
-          .map((key) => HalfMoveStatsWidget(stat: key))
-          .map((widget) => Padding(child: widget, padding: EdgeInsets.all(4.0)))
-          .toList(),
-    );
-  }
+  _GameTreeExplorerState createState() => _GameTreeExplorerState();
+}
+
+class _GameTreeExplorerState extends State<GameTreeExplorer> {
+  @override
+  Widget build(BuildContext context) => Column(
+        children: widget.gameTree.tree.values
+            .map((key) => HalfMoveStatsWidget(stat: key))
+            .map((widget) => InkWell(
+                  child: widget,
+                  onTap: () {
+                    this.widget.gameTree.goDown(widget.stat.position);
+                    this.widget.onClick(widget.stat);
+                    setState(() {});
+                  },
+                ))
+            .map((widget) => Padding(
+                  child: widget,
+                  padding: EdgeInsets.all(4.0),
+                ))
+            .toList(),
+      );
 }
 
 class HalfMoveStatsWidget extends StatelessWidget {
@@ -32,32 +43,34 @@ class HalfMoveStatsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
         width: _barSize + 35,
-        child: Row(children: [
-          Expanded(child: Text(stat.position)),
-          Container(
-            decoration: BoxDecoration(
-                border:
-                    Border.all(width: borderWidth, color: Colors.grey.shade300),
-                borderRadius: BorderRadius.all(Radius.circular(5))),
-            width: _barSize + borderWidth * 2,
-            child: Row(children: [
-              Portion(
-                width: _portion(this.stat.whiteWins),
-                color: Colors.white,
-                percent: calculatePercentage(this.stat.whiteWins),
-              ),
-              Portion(
-                width: _portion(this.stat.draw),
-                color: Colors.grey,
-                percent: calculatePercentage(this.stat.draw),
-              ),
-              Portion(
-                  width: _portion(this.stat.blackWins),
-                  percent: calculatePercentage(stat.blackWins),
-                  color: Colors.black),
-            ]),
-          ),
-        ]),
+        child: InkWell(
+          child: Row(children: [
+            Expanded(child: Text(stat.position)),
+            Container(
+              decoration: BoxDecoration(
+                  border: Border.all(
+                      width: borderWidth, color: Colors.grey.shade300),
+                  borderRadius: BorderRadius.all(Radius.circular(5))),
+              width: _barSize + borderWidth * 2,
+              child: Row(children: [
+                Portion(
+                  width: _portion(this.stat.whiteWins),
+                  color: Colors.white,
+                  percent: calculatePercentage(this.stat.whiteWins),
+                ),
+                Portion(
+                  width: _portion(this.stat.draw),
+                  color: Colors.grey,
+                  percent: calculatePercentage(this.stat.draw),
+                ),
+                Portion(
+                    width: _portion(this.stat.blackWins),
+                    percent: calculatePercentage(stat.blackWins),
+                    color: Colors.black),
+              ]),
+            ),
+          ]),
+        ),
       );
 
   double _portion(int game) => this._barSize * (game / this.stat.total);
